@@ -2,8 +2,9 @@ package com.ecommerce.app.service;
 
 import java.util.List;
 
-import com.ecommerce.app.entity.Order;
+import com.ecommerce.app.entity.Cart;
 import com.ecommerce.app.entity.Product;
+import com.ecommerce.app.entity.ProductCart;
 
 public interface CartService {
 
@@ -17,6 +18,8 @@ public interface CartService {
 
 	void makeOrder(Integer userId, double total, List<Product> cartProducts);
 
-	List<Order> getOrderList(Integer userId);
+	List<Cart> getOrderList(Integer userId);
+
+	List<ProductCart> getProductsCart(Integer userId);
 
 }

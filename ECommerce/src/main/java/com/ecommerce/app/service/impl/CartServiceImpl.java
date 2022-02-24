@@ -6,8 +6,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.ecommerce.app.dao.CartDao;
-import com.ecommerce.app.entity.Order;
+import com.ecommerce.app.entity.Cart;
 import com.ecommerce.app.entity.Product;
+import com.ecommerce.app.entity.ProductCart;
 import com.ecommerce.app.service.CartService;
 
 @Service
@@ -42,9 +43,13 @@ public class CartServiceImpl implements CartService{
 	}
 
 	@Override
-	public List<Order> getOrderList(Integer userId) {
-		// TODO Auto-generated method stub
+	public List<Cart> getOrderList(Integer userId) {
 		return cartDao.getOrderList(userId);
+	}
+
+	@Override
+	public List<ProductCart> getProductsCart(Integer userId) {
+		return cartDao.getProductsCart(userId);
 	}
 
 }

@@ -1,5 +1,8 @@
 package com.ecommerce.app;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -17,7 +20,7 @@ import com.ecommerce.app.service.UserService;
 public class UserController {
 	
 	@Autowired
-	UserService userService;
+	private UserService userService;
 
 	@RequestMapping(value = "/", method = RequestMethod.GET)
 	public String showRegistrationPage(Model model) {
@@ -36,11 +39,16 @@ public class UserController {
 	
 	@RequestMapping(value = "/login", method = RequestMethod.POST)
 	public String authenticateUser(@ModelAttribute Credential credential, Model model) {
-		User user = userService.authenticateUser(credential.getName(), credential.getPassword());
+		List<User> userG = new ArrayList<>();
 		
-		if(ObjectUtils.isEmpty(user))return "loginfailure";
+		userG = userService.authenticateUser(credential.getName(), credential.getPassword());
 		
-		model.addAttribute("userId", user.getUserId());
+		if(userG.isEmpty())return "loginfailure";
+		
+		for(User obj : userG) {
+			model.addAttribute("userId", obj.getUserId());
+		}
+		
 		return "redirect:/getProducts";
 	}
 }

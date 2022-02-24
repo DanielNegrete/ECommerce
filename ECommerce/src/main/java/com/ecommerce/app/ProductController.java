@@ -21,7 +21,7 @@ import com.ecommerce.app.service.ProductService;
 public class ProductController {
 	
 	@Autowired
-	ProductService productService;
+	private ProductService productService;
 	
 	@RequestMapping(value = "/getProducts", method = RequestMethod.GET)
 	public ModelAndView getAllProducts(@RequestParam("userId") Integer userId, ModelAndView modelAndView) {

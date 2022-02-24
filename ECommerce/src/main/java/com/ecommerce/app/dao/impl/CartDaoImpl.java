@@ -7,22 +7,28 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.hibernate.query.Query;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import com.ecommerce.app.dao.CartDao;
-import com.ecommerce.app.entity.Order;
+import com.ecommerce.app.entity.Cart;
 import com.ecommerce.app.entity.Product;
+import com.ecommerce.app.entity.ProductCart;
 
 @Repository
 public class CartDaoImpl implements CartDao{
 	
+	@Autowired
+	private SessionFactory sessionFactory;
+	
 	static int cont=0;
 	static double total;
 	static List<Product> cartProducts = new ArrayList<>();
-	static List<Product> orderProducts = new ArrayList<>();
-	List<Order> ordersList = new ArrayList<>();
-	static HashMap<Integer, Order> orderDatabase = new HashMap<>();
-	
+	//static List<Product> orderProducts = new ArrayList<>();
+	//static HashMap<Integer, Cart> orderDatabase = new HashMap<>();
 	
 	@Override
 	public void addCartProduct(Product product) {
@@ -57,21 +63,58 @@ public class CartDaoImpl implements CartDao{
 
 	@Override
 	public void makeOrder(Integer userId, double total, List<Product> cartProducts) {
-		Order order = new Order();		
-		for (Product obj : cartProducts) {
-			orderProducts.add(obj);
-		}	
-		order.setOrderId(cont++);
-		order.setUserId(userId);
-		order.setTotal(total);
-		order.setDateTime(LocalDateTime.now());
-		order.setProducts(orderProducts);
-		orderDatabase.put(order.getUserId(), order);
+		Cart cart = new Cart();		
+		//for (Product obj : cartProducts) {
+			//orderProducts.add(obj);
+		//}	
+		cart.setOrderId(cont++);
+		cart.setUserId(userId);
+		cart.setTotal(total);
+		cart.setDateTime(LocalDateTime.now());
+		
+		
+		for(Product obj : cartProducts) {
+			ProductCart productCart = new ProductCart();
+			
+			productCart.setOrderId(cart.getOrderId());
+			productCart.setProductName(obj.getProductName());
+			productCart.setProductQuantity(obj.getProductQuantity());
+			productCart.setProductPrice(obj.getProductPrice());
+			
+			Session session = sessionFactory.openSession();
+			session.beginTransaction();
+			
+			session.persist(productCart);
+			session.getTransaction().commit();
+			session.close();
+		}
+		
+		Session session = sessionFactory.openSession();
+		session.beginTransaction();
+		
+		session.persist(cart);
+		session.getTransaction().commit();
+		session.close();
+		
+		cartProducts.clear();
+		//order.setProducts(orderProducts);
+		//orderDatabase.put(order.getUserId(), order);
 	}
 
 	@Override
-	public List<Order> getOrderList(Integer userId) {
-		for (Order value : orderDatabase.values()) {
+	public List<Cart> getOrderList(Integer userId) {
+		List<Cart> ordersList = new ArrayList<>();
+		
+		Session session = sessionFactory.openSession();
+		session.beginTransaction();
+		Query query = session.createQuery("FROM Cart C WHERE C.userId = :userId");
+		query.setParameter("userId", userId);
+		ordersList = query.list();
+		session.close();
+		
+		return ordersList;
+		/*
+		for (Cart value : orderDatabase.values()) {
 			if(value.getUserId() != userId)	
 				ordersList.remove(value);
 			if(value.getUserId().equals(userId))
@@ -79,5 +122,21 @@ public class CartDaoImpl implements CartDao{
 		}
 		 cartProducts.removeAll(cartProducts);
 		return ordersList;
+		*/
+	}
+
+	@Override
+	public List<ProductCart> getProductsCart(Integer userId) {
+		List<ProductCart> productsCart = new ArrayList<>();
+		
+		Session session = sessionFactory.openSession();
+		session.beginTransaction();
+		Query query = session.createQuery("FROM ProductCart");
+		//"SELECT P.orderId, P.productName, P.productQuantity, P.productPrice FROM ProductCart P INNER JOIN Cart C ON P.orderId=C.orderId WHERE C.userId = :userId"
+		//query.setParameter("userId", userId);
+		productsCart = query.list();
+		session.close();
+		
+		return productsCart;
 	}
 }

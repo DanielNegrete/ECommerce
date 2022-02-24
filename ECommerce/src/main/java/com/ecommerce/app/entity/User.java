@@ -1,7 +1,12 @@
 package com.ecommerce.app.entity;
 
+import javax.persistence.Entity;
+import javax.persistence.Id;
+
+@Entity
 public class User {
 	
+	@Id
 	private Integer userId;
 	private String name;
 	private String password;
