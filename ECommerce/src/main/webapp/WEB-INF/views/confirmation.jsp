@@ -25,14 +25,14 @@
 	<div class="p-3 mb-2 bg-success text-white rounded" ><h1>Your Orders</h1></div><br>
 		<div class="d-flex justify-content-lg-start">
 		<div class="table-responsive">
-			<c:forEach items="${orderList}" var="ord">
 			<h3>Your order details</h3>
+			<c:forEach items="${orderList}" var="ord">
 			<table class="table align-middle table-dark table-striped">
 				<tr>
-					<th class="align-middle">Order ID:</th>
-					<th class="align-middle">User ID:</th>
-					<th class="align-middle">Date:</th>
-					<th class="align-middle">Total:</th>
+					<th class="align-middle">Order ID</th>
+					<th class="align-middle">User ID</th>
+					<th class="align-middle">Date</th>
+					<th class="align-middle">Total</th>
 				</tr>
 					<tr>
 						<td class="align-middle">${ord.orderId}</td>
@@ -40,25 +40,25 @@
 						<td class="align-middle">${ord.dateTime}</td>
 						<td class="align-middle">$${ord.total}</td>
 					</tr>
-			</table>
+			</table><br>			
+			</c:forEach>
 			<br><h3>Your products details</h3>
 			<table class="table align-middle table-dark table-striped">
 			<tr>
-				<th class="align-middle">Product Name:</th>
-				<th class="align-middle">Product Category:</th>
-				<th class="align-middle">Price:</th>
-				<th class="align-middle">Quantity:</th>
+				<th class="align-middle">Order No.</th>
+				<th class="align-middle">Product Name</th>
+				<th class="align-middle">Price</th>
+				<th class="align-middle">Quantity</th>
 			</tr>
-			<c:forEach items="${ord.products}" var="prod">
+			<c:forEach items="${productCart}" var="prod">
 				<tr>
+					<td class="align-middle">${prod.orderId}</td>
 					<td class="align-middle">${prod.productName}</td>
-					<td class="align-middle">${prod.productCategory}</td>
 					<td class="align-middle">$${prod.productPrice}</td>
 					<td class="align-middle">${prod.productQuantity}</td>
 				</tr>
 			</c:forEach>
-		</table>			
-			</c:forEach>	
+			</table>	
 		</div>
 		</div>
 		<a class="btn btn-outline-dark" href="../getProducts?userId=${userId}">Products List</a>

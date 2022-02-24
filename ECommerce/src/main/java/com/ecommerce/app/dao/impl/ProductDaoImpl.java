@@ -3,6 +3,9 @@ package com.ecommerce.app.dao.impl;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import com.ecommerce.app.dao.ProductDao;
@@ -11,8 +14,28 @@ import com.ecommerce.app.entity.Product;
 @Repository
 public class ProductDaoImpl implements ProductDao{
 	
+	int cont;
+	
+	@Autowired
+	private SessionFactory sessionFactory;
 
 	public List<Product> getProducts() {
+		if(cont == 0) {
+			addProducts();
+		}
+		
+		List<Product> productsList = new ArrayList<Product>();
+		
+		Session session = sessionFactory.openSession();
+		session.beginTransaction();
+		productsList = session.createQuery("FROM Product").list();
+		session.getTransaction().commit();
+		session.close();
+		
+		return productsList;
+	}
+	
+	public void addProducts(){
 		List<Product> productsList = new ArrayList<>();
 		
 		Product product1 = new Product();
@@ -20,7 +43,7 @@ public class ProductDaoImpl implements ProductDao{
 		product1.setProductName("Samsung A20");
 		product1.setProductCategory("Phone");
 		product1.setProductPrice(191);
-		product1.setProductQuantity(50);
+		product1.setProductQuantity(50);	
 		
 		Product product2 = new Product();
 		product2.setProductId(2);
@@ -48,6 +71,14 @@ public class ProductDaoImpl implements ProductDao{
 		productsList.add(product3);
 		productsList.add(product4);
 		
-		return productsList;
+		for(Product obj : productsList) {
+			Session session = sessionFactory.openSession();
+			session.beginTransaction();
+			
+			session.persist(obj);
+			session.getTransaction().commit();
+			session.close();
+		}
+		cont++;
 	}
 }
